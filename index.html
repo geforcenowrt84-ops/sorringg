@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="heart.png" type="image/x-icon">
+    <title>Sunny Love banyak"</title>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        @font-face {
+            font-family: 'PP Neue Corp';
+            src: url('https://cdn.prod.website-files.com/6717aac16c9ea22eeef1e79e/6717de2d56e40b921572d2d9_PPNeueCorp-TightUltrabold.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'PP Neue Montreal';
+            src: url('https://cdn.prod.website-files.com/6819ed8312518f61b84824df/6819ed8312518f61b84825ba_PPNeueMontreal-Medium.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --pink: #ff6aa2;
+            --pink-2: #ffc8dd;
+            --pink-3: #ffe3ef;
+            --text: #702040;
+            --radius: 14px;
+            --bgsize: .38rem;
+            /* Membuat kartu LEBIH TINGGI untuk memuat foto + video + teks */
+            --card-h: 640px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            overflow: hidden;
+
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            justify-items: center;
+
+            gap: 20px;
+
+            --edge-pad: clamp(18px, 6vw, 32px);
+            padding: clamp(10px, 2.6vh, 24px) var(--edge-pad);
+
+            background: #fff7fb;
+            font-family: 'PP Neue Montreal', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            color: var(--text);
+        }
+
+        .box {
+            position: relative;
+            width: min(100%, 980px);
+            height: var(--card-h);
+            background: #fff;
+            padding: 44px 36px 64px;
+            border: 2px solid var(--pink);
+            border-radius: var(--radius);
+            box-shadow: 0 18px 50px rgba(255, 106, 162, .25);
+            /* overflow: visible PENTING agar foto bisa "keluar" */
+            overflow: visible;
+            display: flex;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                --edge-pad: clamp(24px, 8vw, 40px);
+            }
+
+            :root {
+                /* Lebih tinggi lagi di HP */
+                --card-h: 580px;
+            }
+        }
+
+        .box::after {
+            content: "";
+            position: absolute;
+            z-index: -2;
+            top: .75rem;
+            left: .75rem;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius);
+            background-image: linear-gradient(45deg,
+                    #fff 33.33%,
+                    rgba(255, 106, 162, .35) 33.33%,
+                    rgba(255, 106, 162, .35) 50%,
+                    #fff 50%,
+                    #fff 83.33%,
+                    rgba(255, 106, 162, .35) 83.33%,
+                    rgba(255, 106, 162, .35) 100%);
+            background-size: var(--bgsize);
+        }
+
+        /* ====================================================== */
+        /* ================== CSS BARU UNTUK KONTEN ============= */
+        /* ====================================================== */
+
+        #content {
+            position: relative;
+            overflow: visible;
+            /* Biarkan overflow terlihat */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            /* Mulai dari atas */
+            gap: 0;
+            /* Hapus gap lama */
+            width: 100%;
+            max-width: 860px;
+            padding-top: 0;
+        }
+
+        .image-gallery {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            width: 100%;
+            /* Trik kuncinya: Tarik galeri ke ATAS agar keluar dari box */
+            transform: translateY(-90px);
+            /* Tarik video di bawahnya agar lebih rapat */
+            margin-bottom: -60px;
+            z-index: 10;
+        }
+
+        .polaroid-image {
+            position: relative;
+            width: 180px;
+            /* Ukuran foto polaroid */
+            padding: 10px 10px 20px 10px;
+            background: #fff;
+            border: 1px solid #eee;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .polaroid-image:hover {
+            transform: scale(1.15) rotate(0deg) translateY(-10px) !important;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            z-index: 20;
+        }
+
+        .polaroid-image img {
+            width: 100%;
+            height: 170px;
+            /* Ukuran area gambar */
+            object-fit: cover;
+            display: block;
+            background: #f9f9f9;
+        }
+
+        #img1 {
+            transform: rotate(-15deg) translateX(20px);
+        }
+
+        #img2 {
+            transform: rotate(2deg) translateY(-15px);
+            z-index: 12;
+        }
+
+        #img3 {
+            transform: rotate(12deg) translateX(-20px);
+        }
+
+        /* Container untuk video (PENGGANTI .apology-text) */
+        .video-container {
+            position: relative;
+            z-index: 5;
+            /* Di belakang polaroid */
+            width: 100%;
+            max-width: 540px;
+            /* Lebar video */
+            aspect-ratio: 16 / 9;
+            background: #fceef5;
+            /* Warna bg saat video loading */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ====================================================== */
+        /* ============ CSS BARU UNTUK TEKS ANIMASI ============= */
+        /* ====================================================== */
+
+        .animated-text-container {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            max-width: 540px;
+            /* Samakan dengan video */
+            margin-top: 24px;
+            /* Jarak dari video */
+            /* Beri ruang untuk 2 baris teks */
+            height: 60px;
+            font-family: 'PP Neue Montreal', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+            line-height: 1.6;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .animated-text-container .text-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            width: 100%;
+            font-size: 24px;
+            font-weight: 500;
+            opacity: 0;
+            /* Sembunyi by default */
+            /* Animasi masuk dan keluar */
+            animation-duration: 0.8s;
+            animation-fill-mode: forwards;
+            /* Tahan state di akhir */
+            animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .animated-text-container .text-line.is-visible {
+            animation-name: fadeInUp;
+        }
+
+        .animated-text-container .text-line.is-hidden {
+            animation-name: fadeOutUp;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOutUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+
+        /* ====================================================== */
+        /* ============= CSS BARU UNTUK LIGHTBOX FOTO =========== */
+        /* ====================================================== */
+
+        #lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 20000;
+            background: rgba(29, 14, 22, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            /* Tidak bisa diklik saat sembunyi */
+            transition: opacity 0.3s ease;
+        }
+
+        #lightbox-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+            /* Bisa diklik saat muncul */
+        }
+
+        #lightbox-image {
+            display: block;
+            max-width: 90vw;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-close-text {
+            position: absolute;
+            bottom: 3vh;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            opacity: 0.7;
+            font-size: 0.9rem;
+            font-family: 'PP Neue Montreal', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        }
+
+
+        @media (max-width: 480px) {
+            :root {
+                --card-h: 480px;
+            }
+
+            .image-gallery {
+                transform: translateY(-70px);
+                margin-bottom: -50px;
+            }
+
+            .polaroid-image {
+                width: 90px;
+                padding: 8px 8px 15px 8px;
+            }
+
+            .polaroid-image img {
+                height: 80px;
+            }
+
+            #img1 {
+                transform: rotate(-15deg) translateX(15px);
+            }
+
+            #img3 {
+                transform: rotate(12deg) translateX(-15px);
+            }
+
+            .animated-text-container {
+                height: 80px;
+                /* Beri ruang lebih di HP */
+
+            }
+        }
+
+
+        /* ====================================================== */
+        /* ============ CSS BAWAAN (PLAYER, DLL) ================ */
+        /* ====================================================== */
+
+        /* ... (CSS untuk player, butterfly, intro, footer tetap sama persis) ... */
+
+        /* Mini player */
+        #player-card {
+            width: min(92vw, 520px);
+            background: #fff;
+            border: 2px solid var(--pink);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 28px rgba(255, 106, 162, .2);
+            padding: 16px 18px 20px;
+            text-align: center;
+            font-family: 'PP Neue Montreal', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        }
+
+        #player-title {
+            margin: 0 0 10px;
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+        }
+
+        .controls button {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 2px solid var(--pink);
+            background: var(--pink-3);
+            font-weight: 700;
+            cursor: pointer;
+            min-width: 100px;
+            font-family: 'PP Neue Montreal', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        }
+
+        .controls button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        /* Intro Overlay */
+        #intro-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background:
+                radial-gradient(60% 80% at 30% 20%, rgba(255, 182, 193, 0.55), rgba(255, 255, 255, 0.65) 50%),
+                linear-gradient(135deg, rgba(255, 192, 203, 0.55), rgba(255, 255, 255, 0.85));
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            transition: opacity .6s ease;
+            cursor: pointer;
+        }
+
+        #intro-overlay.intro-hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-content {
+            font-family: 'PP Neue Montreal', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            color: #1a1a1a;
+            user-select: none;
+        }
+
+        .intro-title {
+            font-weight: 700;
+            letter-spacing: .02em;
+            margin: 0 0 .35em 0;
+            font-size: clamp(28px, 7vw, 72px);
+        }
+
+        .intro-sub {
+            font-weight: 500;
+            opacity: .85;
+            font-size: clamp(14px, 2.6vw, 22px);
+        }
+
+        /* Butterfly */
+        @keyframes flutter {
+            from {
+                transform: rotateX(0);
+            }
+
+            to {
+                transform: rotateX(80deg);
+            }
+        }
+
+        #butterfly-hero {
+            position: relative;
+            z-index: 5;
+        }
+
+        .butterfly {
+            background: none;
+            color: hotpink;
+        }
+
+        path {
+            fill: currentcolor;
+        }
+
+        .butterfly__wing {
+            transform-origin: center center;
+            animation: flutter 150ms alternate infinite;
+        }
+
+        .butterfly-container {
+            --RADIUS-ANIMATION-ANGLE: var(--PI);
+            --r-min: 2;
+            --r-max: 10;
+            --delta-r: calc(var(--r-max) - var(--r-min));
+            --gamma-reference-angle: calc(var(--progress) * var(--RADIUS-ANIMATION-ANGLE));
+            --r: calc(var(--r-min) + var(--delta-r) * sin(var(--gamma-reference-angle)));
+        }
+
+        @property --progress {
+            initial-value: 0;
+            inherits: false;
+            syntax: '<number>';
+        }
+
+        @keyframes progress {
+            from {
+                --progress: 0;
+            }
+
+            to {
+                --progress: 1;
+            }
+        }
+
+        .shape-container {
+            --PI: 3.1415;
+            --WAVE-COUNT: 2;
+            --TOTAL-ANGLE: calc(var(--WAVE-COUNT) * 2 * var(--PI));
+            --UNIT: 1vw;
+            --r: 4;
+            --CONTAINER-WIDTH: 100;
+            --x: calc(var(--progress) * var(--CONTAINER-WIDTH));
+            --ROTATION-PER-LENGTH-UNIT: calc(var(--TOTAL-ANGLE) / var(--CONTAINER-WIDTH));
+            --alpha-reference-angle: calc(var(--ROTATION-PER-LENGTH-UNIT) * var(--x) * 1rad);
+            --y: calc(-1 * var(--r) * sin(var(--alpha-reference-angle)));
+            --x-with-unit: calc(var(--x) * var(--UNIT));
+            --y-with-unit: calc(var(--y) * var(--UNIT));
+            --tan: calc(var(--r) * var(--ROTATION-PER-LENGTH-UNIT) * cos(var(--alpha-reference-angle)));
+            --beta-tangent-angle: atan(var(--tan));
+
+            position: fixed;
+            top: clamp(12px, 5vh, 56px);
+            left: 0;
+            z-index: 6;
+            width: calc(var(--CONTAINER-WIDTH) * var(--UNIT));
+            animation: progress 3s linear infinite;
+        }
+
+        .shape {
+            --shape-width: 50px;
+            --shape-height: 10px;
+            position: absolute;
+            z-index: 7;
+            top: calc(-0.5 * var(--shape-height));
+            left: calc(-0.5 * var(--shape-width));
+            width: var(--shape-width);
+            height: var(--shape-height);
+            translate: var(--x-with-unit) var(--y-with-unit);
+            rotate: var(--beta-tangent-angle);
+        }
+
+        @media (max-width: 600px) {
+            .shape-container {
+                top: clamp(8px, 4vh, 40px);
+            }
+
+            .shape {
+                --shape-width: 44px;
+            }
+        }
+
+        /* Footer */
+        .site-footer {
+            text-align: center;
+            font-family: 'PP Neue Montreal', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            font-size: .95rem;
+            color: #7a4563;
+            opacity: .9;
+        }
+
+        .site-footer .heart {
+            color: #ff4d93;
+            display: inline-block;
+            transform-origin: center;
+            animation: heart-beat 1.4s ease-in-out infinite;
+        }
+
+        @keyframes heart-beat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .site-footer .heart {
+                animation: none;
+            }
+        }
+
+        #butterfly-hero {
+            align-self: start;
+        }
+
+        #card {
+            place-self: center;
+        }
+
+        #player-card,
+        .site-footer {
+            align-self: end;
+        }
+    </style>
+</head>
+
+<body>
+    <section id="butterfly-hero" aria-label="Butterfly hero">
+        <div class="shape-container butterfly-container">
+            <div class="shape butterfly">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 200" width="50">
+                    <style>
+                        path {
+                            fill: hotpink;
+                        }
+                    </style>
+                    <g class="butterfly__wing">
+                        <path
+                            d="M75.13 100s59.42 41.22 56.79 82.78c-.77 12.12-6.14 19.32-23.41 16.67C59.79 191.97 55.75 131.44 64 100h11.13Z" />
+                        <path
+                            d="M68.22 100c1.15 19.13-4.22 72.17-29.35 70.47-23.04-1.56-40.43-16.38-38.76-28.04 2.69-18.75 39.33-41.3 47.58-42.43h20.53Z" />
+                    </g>
+                    <g class="butterfly__wing">
+                        <path id="bfy-wing-2a"
+                            d="M75.13 100s59.42-41.22 56.79-82.78C131.15 5.1 125.78-2.1 108.51.55 59.79 8.03 55.75 68.56 64 100h11.13Z" />
+                        <path id="bfy-wing-2b"
+                            d="M68.22 100C69.37 80.87 64 27.83 38.87 29.53 15.83 31.09-1.56 45.91.11 57.57 2.8 76.32 39.44 98.87 47.69 100h20.53Z" />
+                    </g>
+                    <g class="butterfly__body">
+                        <path
+                            d="M82.59 102.81a4.806 4.806 0 0 0 3.85 1.92c2.65 0 4.8-2.12 4.8-4.74s-2.15-4.74-4.8-4.74c-1.58 0-2.98.76-3.85 1.92-2.69-1.17-7.01-1.92-11.88-1.92-3.19 0-6.15.33-8.56.88-2.42-.55-5.37-.88-8.56-.88-4.22 0-8.03.57-10.72 1.48-2.69-.91-6.5-1.48-10.72-1.48-8.16 0-14.77 2.12-14.77 4.74s6.61 4.74 14.77 4.74c4.22 0 8.03-.57 10.72-1.48 2.69.91 6.5 1.48 10.72 1.48 3.19 0 6.15-.33 8.56-.88 2.42.55 5.37.88 8.56.88 4.87 0 9.19-.76 11.88-1.92Z" />
+                        <path
+                            d="M89.97 101.73s0-.1.01-.15c.08-.51.56-.85 1.08-.77 12.36 1.97 28.14 10.97 33.05 23.76a.933.933 0 0 1-.55 1.2.94.94 0 0 1-1.21-.54c-4.66-12.14-19.75-20.7-31.59-22.59a.931.931 0 0 1-.79-.91Z" />
+                        <path
+                            d="M89.97 98.27s0 .1.01.15c.08.51.56.85 1.08.77 12.36-1.97 28.14-10.97 33.05-23.76a.933.933 0 0 0-.55-1.2.94.94 0 0 0-1.21.54c-4.66 12.14-19.75 20.7-31.59 22.59-.46.07-.79.47-.79.91Z" />
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section class="box" id="card">
+        <div id="content">
+
+            <div class="image-gallery">
+                <div class="polaroid-image" id="img1">
+                    <img src="VAL12.png" alt="Kenangan 1">
+                </div>
+                <div class="polaroid-image" id="img2">
+                    <img src="21xx.png" alt="Kenangan 2">
+                </div>
+                <div class="polaroid-image" id="img3">
+                    <img src="val21.png" alt="Kenangan 3">
+                </div>
+            </div>
+
+            <div class="video-container">
+                <video src="ours.mp4" loop playsinline aria-label="Video kenangan"></video>
+            </div>
+
+            <div class="animated-text-container">
+                <span class="text-line">sunnyy, good morning sayaannggg</span>
+                <span class="text-line">semoga hari ini jadi hari yang menyenangkan yaaa...</span>
+                <span class="text-line">maafin uwaa yaa kalo uwaa nyakitin perasaan sunny,</span>
+                <span class="text-line">uwaa sayang banget sama sunnyy.</span>
+                <span class="text-line">makasih yaa udah nemenin uwaa kemarin kemarin dan juga nanti</span>
+                <span class="text-line">semoga kita bisa terus bareng-bareng yaaa...</span>
+                <span class="text-line">i love youu so muchhh &lt;3</span>
+            </div>
+
+        </div>
+    </section>
+    <section id="player-card" aria-label="Pemutar musik">
+        <p id="player-title">ours to keep - kendis</p>
+        <div class="controls">
+            <button id="play-btn">Play</button>
+            <button id="pause-btn" disabled>Pause</button>
+        </div>
+    </section>
+
+    <div id="intro-overlay" tabindex="0">
+        <div class="intro-content">
+            <div class="intro-title">Haii, Sunny...</div>
+            <div class="intro-title">Ada sesuatu buat kamu...</div>
+            <div class="intro-sub">Click Anywhere</div>
+        </div>
+    </div>
+
+    <footer class="site-footer" aria-label="Footer">
+        made with <span class="heart" aria-hidden="true">♥</span> by Mikhael
+    </footer>
+
+    <div id="lightbox-overlay">
+        <img src="" alt="Tampilan Penuh" id="lightbox-image">
+        <div class="lightbox-close-text">Klik di mana saja untuk menutup</div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <script>
+        // =============================================
+        // =========== KUMPULAN ELEMEN (DIUBAH) ========
+        // =============================================
+        const audio = document.getElementById('audio');
+        const playBtn = document.getElementById('play-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+
+        // Elemen baru
+        const video = document.querySelector('#content video');
+        const lightbox = document.getElementById('lightbox-overlay');
+        const lightboxImg = document.getElementById('lightbox-image');
+        const polaroids = document.querySelectorAll('.polaroid-image');
+        // =============================================
+
+        // --- Logic untuk Kontrol Play/Pause (SAMA) ---
+        function playAll() {
+            video.play().catch(() => { });
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+        }
+
+        function pauseAll() {
+            video.pause();
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+
+        playBtn.addEventListener('click', playAll); // Update listener
+        pauseBtn.addEventListener('click', pauseAll); // Update listener
+
+        // --- Logic untuk Intro Overlay (SAMA) ---
+        function startFromOverlay() {
+            const overlay = $("#intro-overlay");
+            overlay.addClass("intro-hide");
+            setTimeout(() => overlay.remove(), 650);
+            $("#play-btn").trigger("click");
+        }
+        $("#intro-overlay").on("click", startFromOverlay);
+        $(document).on("keydown", function (e) {
+            if ($("#intro-overlay").length && (e.key === "Enter" || e.key === " ")) {
+                e.preventDefault();
+                startFromOverlay();
+            }
+        });
+
+        // --- Logic Lightbox (SAMA) ---
+        polaroids.forEach(polaroid => {
+            polaroid.addEventListener('click', () => {
+                const imgSrc = polaroid.querySelector('img').src;
+                lightboxImg.src = imgSrc;
+                lightbox.classList.add('show');
+                pauseAll();
+            });
+        });
+
+        lightbox.addEventListener('click', () => {
+            lightbox.classList.remove('show');
+        });
+
+        // --- Logic Animasi Transisi Konten (DIUBAH) ---
+        const content = document.getElementById('content');
+
+        function getAnimatableItems() {
+            const images = Array.from(content.querySelectorAll('.polaroid-image'));
+            const videoContainer = content.querySelector('.video-container');
+            const textContainer = content.querySelector('.animated-text-container'); // BARU
+
+            let items = [];
+            if (images.length) items.push(...images);
+            if (videoContainer) items.push(videoContainer);
+            if (textContainer) items.push(textContainer); // BARU
+            return items;
+        }
+
+        function animateIn() {
+            const items = getAnimatableItems();
+            if (!items.length) return;
+
+            anime.set(items, { opacity: 0 });
+            anime.set(content.querySelectorAll('.polaroid-image'), { translateY: 40, opacity: 0 });
+            anime.set(content.querySelector('.video-container'), { translateY: 20, opacity: 0 });
+            anime.set(content.querySelector('.animated-text-container'), { translateY: 20, opacity: 0 }); // BARU
+
+            anime({
+                targets: content.querySelectorAll('.polaroid-image'),
+                translateY: 0,
+                opacity: 1,
+                duration: 800,
+                easing: 'easeOutCubic',
+                delay: anime.stagger(150, { start: 200 })
+            });
+
+            anime({
+                targets: content.querySelector('.video-container'),
+                translateY: 0,
+                opacity: 1,
+                duration: 700,
+                easing: 'easeOutCubic',
+                delay: 600
+            });
+
+            // BARU: Animasikan container teks
+            anime({
+                targets: content.querySelector('.animated-text-container'),
+                translateY: 0,
+                opacity: 1,
+                duration: 700,
+                easing: 'easeOutCubic',
+                delay: 800 // Muncul setelah video
+            });
+        }
+
+        // =================================================
+        // =========== LOGIC BARU UNTUK TEKS LOOP ==========
+        // =================================================
+        function startTextLoop() {
+            const textLines = document.querySelectorAll('.animated-text-container .text-line');
+            if (!textLines.length) return; // Keluar jika tidak ada teks
+
+            let currentLineIndex = 0;
+
+            // Fungsi untuk mengganti line
+            function cycleLines() {
+                const oldIndex = currentLineIndex;
+
+                // Tentukan index baru, lalu loop
+                currentLineIndex = (currentLineIndex + 1) % textLines.length;
+
+                // Sembunyikan line lama
+                if (textLines[oldIndex]) {
+                    textLines[oldIndex].classList.remove('is-visible');
+                    textLines[oldIndex].classList.add('is-hidden');
+                }
+
+                // Tampilkan line baru
+                // Hapus class 'is-hidden' (jika ada dari loop sebelumnya)
+                if (textLines[currentLineIndex]) {
+                    textLines[currentLineIndex].classList.remove('is-hidden');
+                    textLines[currentLineIndex].classList.add('is-visible');
+                }
+            }
+
+            // Tampilkan line pertama saat fungsi dipanggil
+            if (textLines[0]) {
+                textLines[0].classList.add('is-visible');
+            }
+
+            // Mulai interval (loop)
+            setInterval(cycleLines, 2800); // Ganti setiap 4 detik
+        }
+        // =================================================
+        // ============ AKHIR LOGIC TEKS LOOP ==============
+        // =================================================
+
+        // --- Pemanggilan Fungsi (DIUBAH) ---
+        $(document).one("click keydown", () => {
+            setTimeout(animateIn, 100);
+
+            // Mulai loop teks SETELAH animasi intro container-nya selesai
+            // (animasi text container punya delay 800ms + durasi 700ms = 1500ms)
+            // Kita beri sedikit buffer, misal 1700ms (1.7 detik)
+            setTimeout(startTextLoop, 1700);
+        });
+    </script>
+</body>
+
+</html>
